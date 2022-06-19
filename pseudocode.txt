@@ -1,0 +1,2 @@
+Create function
+Function will randomly return rock paper and scissors
