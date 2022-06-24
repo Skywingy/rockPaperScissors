@@ -1,62 +1,62 @@
-//Random selection array
-const select = ["rock", "paper", "scissors"];
-let playerSelectionCount = 0;
-let computerSelectionCount = 0;
-//Random selection function
-function computerPlay() {
-    const random = select[Math.floor(Math.random() * select.length)];
-    return random;
+const selectionButtons = document.querySelectorAll('[data-selection]')
+const finalColumn = document.querySelector('[data-final-column]')
+const computerScoreSpan = document.querySelector('[data-computer-score]')
+const yourScoreSpan = document.querySelector('[data-your-score]')
+const SELECTIONS = [
+  {
+    name: 'rock',
+    emoji: '✊',
+    beats: 'scissors'
+  },
+  {
+    name: 'paper',
+    emoji: '✋',
+    beats: 'rock'
+  },
+  {
+    name: 'scissors',
+    emoji: '✌',
+    beats: 'paper'
+  }
+]
+
+selectionButtons.forEach(selectionButton => {
+  selectionButton.addEventListener('click', e => {
+    const selectionName = selectionButton.dataset.selection
+    const selection = SELECTIONS.find(selection => selection.name === selectionName)
+    makeSelection(selection)
+  })
+})
+
+function makeSelection(selection) {
+  const computerSelection = randomSelection()
+  const yourWinner = isWinner(selection, computerSelection)
+  const computerWinner = isWinner(computerSelection, selection)
+
+  addSelectionResult(computerSelection, computerWinner)
+  addSelectionResult(selection, yourWinner)
+
+  if (yourWinner) incrementScore(yourScoreSpan)
+  if (computerWinner) incrementScore(computerScoreSpan)
 }
 
-//Com and Player selection phase and winner
-
-function playRound(playerSelection, computerSelection) {
-    playerSelection = prompt("Rock, Paper or Scissors?").toLowerCase();
-    console.log("player:", playerSelection)
-    computerSelection = computerPlay() ;
-    console.log("com:", computerSelection);
-    if (playerSelection == "rock" && computerSelection == "scissors" ||
-        playerSelection == "paper" && computerSelection == "rock" ||
-        playerSelection == "scissors" && computerSelection == "paper") {
-            playerSelectionCount++;
-            console.log("Yeey you won!!! GOODJOB!");
-        }
-    else if (playerSelection == "rock" && computerSelection == "paper" ||
-             playerSelection == "paper" && computerSelection == "scissors" ||
-             playerSelection == "scissors" && computerSelection == "rock"){
-                 computerSelectionCount++;
-                 console.log("It's okay you will win next time! Cheer UP!");
-             }
-    else if (playerSelection == "rock" && computerSelection == "rock" ||
-            playerSelection == "paper" && computerSelection == "paper" ||
-            playerSelection == "scissors" && computerSelection == "scissors"){
-                console.log("Goodgame! You tie! Shake Hands!");
-            }
-    else {
-        console.log("Please type Rock, Paper or Scissors!");
-    }
-    console.log(playerSelectionCount);
-    console.log(computerSelectionCount);
+function incrementScore(scoreSpan) {
+  scoreSpan.innerText = parseInt(scoreSpan.innerText) + 1
 }
 
-
-//5 round play
-
-function game() {
-    for (let i = 0; i < 5; i++) {
-        playRound();
-    }
-    if (playerSelectionCount > computerSelectionCount) {
-        console.log("Ok you're solid one! Overall you won!")
-    }
-    else if (playerSelectionCount == computerSelectionCount) {
-        console.log("Well... Tie it's")
-    }
-    else {
-        console.log("What can we say... I know it's hard to lose. But hey chin up!! Try better next time!")
-    }
+function addSelectionResult(selection, winner) {
+  const div = document.createElement('div')
+  div.innerText = selection.emoji
+  div.classList.add('result-selection')
+  if (winner) div.classList.add('winner')
+  finalColumn.after(div)
 }
-game();
 
+function isWinner(selection, opponentSelection) {
+  return selection.beats === opponentSelection.name
+}
 
-    
+function randomSelection() {
+  const randomIndex = Math.floor(Math.random() * SELECTIONS.length)
+  return SELECTIONS[randomIndex]
+}
